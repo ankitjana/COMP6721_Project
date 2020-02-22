@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -87,11 +87,52 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+
+    visited = [] #To keep track of visited nodes
+    stack = util.Stack() #The datastructure to store the node
+
+    stack.push([problem.getStartState(), []]) # Pushing initial state to the stack
+
+    while not stack.isEmpty():
+        current, move = stack.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+            for child in problem.getSuccessors(current):
+                child_state = child[0]
+                child_move = child[1]
+
+                if problem.isGoalState(child_state):
+                    return move + [child_move]
+                else:
+                    stack.push([child_state, move + [child_move]])
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    visited = [] #To keep track of visited nodes
+    queue = util.Queue() #The datastructure to store the node
+
+    queue.push([problem.getStartState(), []]) # enqueue initial state to the queue
+
+    while not queue.isEmpty():
+        current, move = queue.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+            for child in problem.getSuccessors(current):
+                child_state = child[0]
+                child_move = child[1]
+
+                if problem.isGoalState(child_state):
+                    return move + [child_move]
+                else:
+                    queue.push([child_state, move + [child_move]])
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -113,7 +154,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
 
 # Abbreviations
-bfs = breadthFirstSearch
-dfs = depthFirstSearch
-astar = aStarSearch
-ucs = uniformCostSearch
+# bfs = breadthFirstSearch
+# dfs = depthFirstSearch
+# astar = aStarSearch
+# ucs = uniformCostSearch
