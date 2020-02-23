@@ -87,7 +87,10 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    print("Goal", problem.goal)
     visited = [] #To keep track of visited nodes
     stack = util.Stack() #The datastructure to store the node
 
@@ -169,6 +172,30 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+
+    #heuristic take two Arguments
+    #a) The current state
+    #b) The problem object. Internally the code uses problem.goal to get goal
+    #state and calculate the heuristic
+    visited = [] #To keep track of visited nodes
+    p_queue = util.PriorityQueue() #The datastructure to store the node
+
+    p_queue.push([problem.getStartState(), []], 0) # enqueue initial state to the queue
+
+    while not p_queue.isEmpty():
+        current, move = p_queue.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+            for child in problem.getSuccessors(current):
+                child_state = child[0]
+                child_move = child[1]
+
+                if problem.isGoalState(child_state):
+                    return move + [child_move]
+                else:
+                    p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]) + heuristic(child_state, problem))
     util.raiseNotDefined()
 
 
