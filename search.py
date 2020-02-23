@@ -138,6 +138,25 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    visited = [] #To keep track of visited nodes
+    p_queue = util.PriorityQueue() #The datastructure to store the node
+
+    p_queue.push([problem.getStartState(), []], 0) # enqueue initial state to the queue
+
+    while not p_queue.isEmpty():
+        current, move = p_queue.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+            for child in problem.getSuccessors(current):
+                child_state = child[0]
+                child_move = child[1]
+
+                if problem.isGoalState(child_state):
+                    return move + [child_move]
+                else:
+                    p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -154,7 +173,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
 
 # Abbreviations
-# bfs = breadthFirstSearch
-# dfs = depthFirstSearch
-# astar = aStarSearch
-# ucs = uniformCostSearch
+bfs = breadthFirstSearch
+dfs = depthFirstSearch
+astar = aStarSearch
+ucs = uniformCostSearch
