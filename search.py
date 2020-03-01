@@ -132,10 +132,10 @@ def breadthFirstSearch(problem):
                 child_move = child[1]
 
                 if problem.isGoalState(child_state):
+                    print('done')
                     return move + [child_move]
                 else:
                     queue.push([child_state, move + [child_move]])
-
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
