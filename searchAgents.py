@@ -273,7 +273,7 @@ class CornersProblem(search.SearchProblem):
     You must select a suitable state space and successor function
     """
 
-    def __init__(self, startingGameState):
+    def __init__(self, startingGameState, visualize=True):
         """
         Stores the walls, pacman's starting position and corners.
         """
@@ -281,6 +281,7 @@ class CornersProblem(search.SearchProblem):
         self.startingPosition = startingGameState.getPacmanPosition()
         top, right = self.walls.height-2, self.walls.width-2
         self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        self.goal = (1,1)
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
@@ -288,6 +289,11 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.visualize = visualize
+        self.visitedCorners = []
+        self.costFn = lambda x : 1
+        # For display purposes
+        self._visited, self._visitedlist, self._expanded = {}, [], 0  # DO NOT CHANGE
 
     def getStartState(self):
         """
@@ -295,14 +301,27 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        isGoal = False
+        # print(self.visitedCorners)
+        if state in self.corners and len(self.visitedCorners) == 3:
+            isGoal = True
+
+        # For display purposes only
+        if isGoal and self.visualize:
+            self._visitedlist.append(state)
+            import __main__
+            if '_display' in dir(__main__):
+                if 'drawExpandedCells' in dir(__main__._display):  # @UndefinedVariable
+                    __main__._display.drawExpandedCells(self._visitedlist)  # @UndefinedVariable
+
+        return isGoal
 
     def getSuccessors(self, state):
         """
@@ -316,18 +335,42 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        "*** YOUR CODE HERE ***"
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x,y = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty)
+                cost = self.costFn(nextState)
+                successors.append( ( nextState, action, cost) )
 
-            "*** YOUR CODE HERE ***"
+        # Bookkeeping for display purposes
+        if state not in self._visitedlist:
+            self._visited[state] = True
+            self._visitedlist.append(state)
+        if state in self.corners and state not in self.visitedCorners:
+            self.visitedCorners.append(state)
+            self.updateGoal(state)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
+
+    def updateGoal(self, state):
+        '''
+        update goal which is the next closest goal (euclidean distance) from this state
+        :param state: current state
+        '''
+        unvisitedCorners = []
+        for corner in self.corners:
+            if corner not in self.visitedCorners:
+                unvisitedCorners.append(corner)
+        minDist = 999999
+        for corner in unvisitedCorners:
+            val = ((state[0] - corner[0]) ** 2 + (state[1] - corner[1]) ** 2) ** 0.5
+            if val < minDist:
+                minDist = val
+                self.goal = corner
 
     def getCostOfActions(self, actions):
         """
@@ -360,7 +403,7 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    return euclideanHeuristic(state, problem)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
