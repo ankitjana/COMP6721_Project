@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -290,10 +290,9 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
         self.visualize = visualize
-        self.visitedCorners = []
+        self.visitedCorners = list()
         self.costFn = lambda x : 1
-        # For display purposes
-        self._visited, self._visitedlist, self._expanded = {}, [], 0  # DO NOT CHANGE
+
 
     def getStartState(self):
         """
@@ -301,25 +300,26 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition
+        return (self.startingPosition, [])
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        isGoal = False
-        # print(self.visitedCorners)
-        if state in self.corners and len(self.visitedCorners) == 3:
-            isGoal = True
 
-        # For display purposes only
-        if isGoal and self.visualize:
-            self._visitedlist.append(state)
-            import __main__
-            if '_display' in dir(__main__):
-                if 'drawExpandedCells' in dir(__main__._display):  # @UndefinedVariable
-                    __main__._display.drawExpandedCells(self._visitedlist)  # @UndefinedVariable
+        isGoal = False
+
+        # print(self.visitedCorners)
+
+        if state[0] in self.corners:
+
+            if state[0] not in state[1]:
+                state[1].append(state)
+                self.visitedCorners.append(state)
+                
+            if len(state[1]) == 4:
+                isGoal = True
 
         return isGoal
 
@@ -334,43 +334,32 @@ class CornersProblem(search.SearchProblem):
             is the incremental cost of expanding to that successor
         """
 
+        x,y = state[0]
+
         successors = []
         "*** YOUR CODE HERE ***"
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x,y = state
             dx, dy = Actions.directionToVector(action)
-            nextx, nexty = int(x + dx), int(y + dy)
-            if not self.walls[nextx][nexty]:
-                nextState = (nextx, nexty)
-                cost = self.costFn(nextState)
-                successors.append( ( nextState, action, cost) )
 
-        # Bookkeeping for display purposes
-        if state not in self._visitedlist:
-            self._visited[state] = True
-            self._visitedlist.append(state)
-        if state in self.corners and state not in self.visitedCorners:
-            self.visitedCorners.append(state)
-            self.updateGoal(state)
+            nextx, nexty = int(x + dx), int(y + dy)
+            next_node = (nextx, nexty)
+
+            if not self.walls[nextx][nexty]:
+                print('state[1]', state[1])
+                print('self.visitedCorners', self.visitedCorners)
+                prev_visits_corners = list(state[1])
+
+                if (next_node in self.corners) and (next_node not in prev_visits_corners):
+                    prev_visits_corners.append(next_node)
+                cost = self.costFn(next_node)
+                successors.append(((next_node, prev_visits_corners), action, cost))
+
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
-    def updateGoal(self, state):
-        '''
-        update goal which is the next closest goal (euclidean distance) from this state
-        :param state: current state
-        '''
-        unvisitedCorners = []
-        for corner in self.corners:
-            if corner not in self.visitedCorners:
-                unvisitedCorners.append(corner)
-        minDist = 999999
-        for corner in unvisitedCorners:
-            val = ((state[0] - corner[0]) ** 2 + (state[1] - corner[1]) ** 2) ** 0.5
-            if val < minDist:
-                minDist = val
-                self.goal = corner
+
 
     def getCostOfActions(self, actions):
         """

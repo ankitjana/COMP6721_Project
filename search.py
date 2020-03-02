@@ -99,6 +99,7 @@ def depthFirstSearch(problem):
     while not stack.isEmpty():
         current, move = stack.pop()
 
+
         if current not in visited:
             visited.append(current)
 
