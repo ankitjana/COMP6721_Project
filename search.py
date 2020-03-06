@@ -87,10 +87,10 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-    print("Goal", problem.goal)
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    # print("Goal", problem.goal)
     visited = [] #To keep track of visited nodes
     stack = util.Stack() #The datastructure to store the node
 
@@ -99,6 +99,9 @@ def depthFirstSearch(problem):
     while not stack.isEmpty():
         current, move = stack.pop()
 
+        if problem.isGoalState(current):
+            print('move', move)
+            return move
 
         if current not in visited:
             visited.append(current)
@@ -107,10 +110,10 @@ def depthFirstSearch(problem):
                 child_state = child[0]
                 child_move = child[1]
 
-                if problem.isGoalState(child_state):
-                    return move + [child_move]
-                else:
-                    stack.push([child_state, move + [child_move]])
+                # if problem.isGoalState(child_state):
+                #     return move + [child_move]
+                # else:
+                stack.push([child_state, move + [child_move]])
 
     util.raiseNotDefined()
 
@@ -125,6 +128,9 @@ def breadthFirstSearch(problem):
     while not queue.isEmpty():
         current, move = queue.pop()
 
+        if problem.isGoalState(current):
+            return move
+
         if current not in visited:
             visited.append(current)
 
@@ -132,11 +138,11 @@ def breadthFirstSearch(problem):
                 child_state = child[0]
                 child_move = child[1]
 
-                if problem.isGoalState(child_state):
-                    print('done')
-                    return move + [child_move]
-                else:
-                    queue.push([child_state, move + [child_move]])
+                # if problem.isGoalState(child_state):
+                #
+                #     return move + [child_move]
+                # else:
+                queue.push([child_state, move + [child_move]])
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -150,6 +156,9 @@ def uniformCostSearch(problem):
     while not p_queue.isEmpty():
         current, move = p_queue.pop()
 
+        if problem.isGoalState(current):
+            return move
+
         if current not in visited:
             visited.append(current)
 
@@ -157,10 +166,8 @@ def uniformCostSearch(problem):
                 child_state = child[0]
                 child_move = child[1]
 
-                if problem.isGoalState(child_state):
-                    return move + [child_move]
-                else:
-                    p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]))
+
+                p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -186,6 +193,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while not p_queue.isEmpty():
         current, move = p_queue.pop()
 
+
+        if problem.isGoalState(current):
+            return move
+
         if current not in visited:
             visited.append(current)
 
@@ -193,10 +204,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 child_state = child[0]
                 child_move = child[1]
 
-                if problem.isGoalState(child_state):
-                    return move + [child_move]
-                else:
-                    p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]) + heuristic(child_state, problem))
+
+                p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]) + heuristic(child_state, problem))
     util.raiseNotDefined()
 
 

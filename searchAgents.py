@@ -162,6 +162,7 @@ class PositionSearchProblem(search.SearchProblem):
             print('Warning: this does not look like a regular search maze')
 
         # For display purposes
+
         self._visited, self._visitedlist, self._expanded = {}, [], 0 # DO NOT CHANGE
 
     def getStartState(self):
@@ -200,13 +201,11 @@ class PositionSearchProblem(search.SearchProblem):
             if not self.walls[nextx][nexty]:
                 nextState = (nextx, nexty)
                 cost = self.costFn(nextState)
-                successors.append( ( nextState, action, cost) )
+                successors.append((nextState, action, cost) )
 
-        # Bookkeeping for display purposes
+
         self._expanded += 1 # DO NOT CHANGE
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
+
 
         return successors
 
@@ -317,7 +316,9 @@ class CornersProblem(search.SearchProblem):
             if state[0] not in state[1]:
                 state[1].append(state)
                 self.visitedCorners.append(state)
-                
+
+            print('len(state[1])', len(state[1]))
+            print('self', len(self.visitedCorners))
             if len(state[1]) == 4:
                 isGoal = True
 
@@ -345,8 +346,7 @@ class CornersProblem(search.SearchProblem):
             next_node = (nextx, nexty)
 
             if not self.walls[nextx][nexty]:
-                print('state[1]', state[1])
-                print('self.visitedCorners', self.visitedCorners)
+
                 prev_visits_corners = list(state[1])
 
                 if (next_node in self.corners) and (next_node not in prev_visits_corners):
@@ -392,7 +392,7 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return euclideanHeuristic(state, problem)
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
