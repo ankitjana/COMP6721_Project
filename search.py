@@ -100,7 +100,7 @@ def depthFirstSearch(problem):
         current, move = stack.pop()
 
         if problem.isGoalState(current):
-            print('move', move)
+            #print('move', move)
             return move
 
         if current not in visited:
