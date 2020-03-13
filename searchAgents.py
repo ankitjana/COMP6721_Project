@@ -317,8 +317,8 @@ class CornersProblem(search.SearchProblem):
                 state[1].append(state)
                 self.visitedCorners.append(state)
 
-            print('len(state[1])', len(state[1]))
-            print('self', len(self.visitedCorners))
+            #print('len(state[1])', len(state[1]))
+            #print('self', len(self.visitedCorners))
             if len(state[1]) == 4:
                 isGoal = True
 
@@ -501,21 +501,21 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     newFoodGrid = foodGrid.copy()
     "*** YOUR CODE HERE ***"
-    totalDist = 0
+    foods = foodGrid.asList()
 
-    # while there's food on the map
-    while newFoodGrid.count() != 0:
-        # print('remaining food: ', newFoodGrid.count())
-        # find the next closest food position from the current position
-        foodPositions = newFoodGrid.asList()
-        distance, newPostion = min([(util.manhattanDistance(position, val), val) for val in foodPositions])
-        # print('new position: {} {}'.format(*newPostion))
-        totalDist += distance  # update total distance
-        position = newPostion  # update position
-        newFoodGrid[position[0]][position[1]] = False  # update food grid
-    # print('DONE')
-    print('totalDist:', totalDist)
-    return totalDist
+
+    dist = []
+    # Get all food's maze distance from current position
+    for food in foods:
+        distance = mazeDistance(position, food, problem.startingGameState)
+        dist.append(distance)
+
+   
+    if len(dist) != 0:
+        # Used 'max' inadmissible or inconsistent heuristics may find optimal 
+        return max(dist)
+    else:
+        return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

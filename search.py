@@ -137,12 +137,8 @@ def breadthFirstSearch(problem):
             for child in problem.getSuccessors(current):
                 child_state = child[0]
                 child_move = child[1]
-
-                # if problem.isGoalState(child_state):
-                #
-                #     return move + [child_move]
-                # else:
                 queue.push([child_state, move + [child_move]])
+   
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -165,9 +161,8 @@ def uniformCostSearch(problem):
             for child in problem.getSuccessors(current):
                 child_state = child[0]
                 child_move = child[1]
-
-
                 p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]))
+    
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -203,9 +198,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             for child in problem.getSuccessors(current):
                 child_state = child[0]
                 child_move = child[1]
-
-
                 p_queue.update([child_state, move + [child_move]], problem.getCostOfActions(move + [child_move]) + heuristic(child_state, problem))
+    
     util.raiseNotDefined()
 
 
