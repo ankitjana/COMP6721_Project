@@ -380,7 +380,7 @@ def cornersHeuristic(state, problem):
     A heuristic for the CornersProblem that you defined.
 
       state:   The current search state
-               (a data structure you chose in your search problem)
+
 
       problem: The CornersProblem instance for this layout.
 
@@ -402,11 +402,10 @@ def cornersHeuristic(state, problem):
 
     while(not_visited != []):
         distance, corner = min([(util.manhattanDistance(temp ,val),val) for val in not_visited])
-        dist +=  distance
+        dist += distance
         temp = corner
 
         not_visited.remove(corner)
-
     return dist
 
 class AStarCornersAgent(SearchAgent):
@@ -435,7 +434,7 @@ class FoodSearchProblem:
         return self.start
 
     def isGoalState(self, state):
-        return state[1].count() == 0
+        return state[1].count() == 0  # no Food left -> zero True value on the grid
 
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
@@ -500,8 +499,23 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    newFoodGrid = foodGrid.copy()
     "*** YOUR CODE HERE ***"
-    return 0
+    totalDist = 0
+
+    # while there's food on the map
+    while newFoodGrid.count() != 0:
+        # print('remaining food: ', newFoodGrid.count())
+        # find the next closest food position from the current position
+        foodPositions = newFoodGrid.asList()
+        distance, newPostion = min([(util.manhattanDistance(position, val), val) for val in foodPositions])
+        # print('new position: {} {}'.format(*newPostion))
+        totalDist += distance  # update total distance
+        position = newPostion  # update position
+        newFoodGrid[position[0]][position[1]] = False  # update food grid
+    # print('DONE')
+    print('totalDist:', totalDist)
+    return totalDist
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -532,7 +546,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -568,7 +582,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]  # return true if this position has food
 
 def mazeDistance(point1, point2, gameState):
     """
