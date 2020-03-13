@@ -380,7 +380,7 @@ def cornersHeuristic(state, problem):
     A heuristic for the CornersProblem that you defined.
 
       state:   The current search state
-               (a data structure you chose in your search problem)
+
 
       problem: The CornersProblem instance for this layout.
 
@@ -402,7 +402,7 @@ def cornersHeuristic(state, problem):
 
     while(not_visited != []):
         distance, corner = min([(util.manhattanDistance(temp ,val),val) for val in not_visited])
-        dist +=  distance
+        dist += distance
         temp = corner
 
         not_visited.remove(corner)
@@ -435,7 +435,7 @@ class FoodSearchProblem:
         return self.start
 
     def isGoalState(self, state):
-        return state[1].count() == 0
+        return state[1].count() == 0  # no Food left -> zero True value on the grid
 
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
@@ -500,8 +500,19 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    newFoodGrid = foodGrid.copy()
     "*** YOUR CODE HERE ***"
-    return 0
+    totalDist = 0
+
+    # while there's food on the map
+    while newFoodGrid.count() != 0:
+        # find the next closest food position from the current position
+        foodPosition = newFoodGrid.asList()
+        distance, newPostion = min([(util.manhattanDistance(position, val), val) for val in foodPosition])
+        totalDist += distance  # update total distance
+        position = newPostion  # update position
+        newFoodGrid[position[0]][position[1]] = False  # update food grid
+    return totalDist
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
