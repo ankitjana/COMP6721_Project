@@ -406,7 +406,6 @@ def cornersHeuristic(state, problem):
         temp = corner
 
         not_visited.remove(corner)
-
     return dist
 
 class AStarCornersAgent(SearchAgent):
@@ -506,12 +505,16 @@ def foodHeuristic(state, problem):
 
     # while there's food on the map
     while newFoodGrid.count() != 0:
+        # print('remaining food: ', newFoodGrid.count())
         # find the next closest food position from the current position
-        foodPosition = newFoodGrid.asList()
-        distance, newPostion = min([(util.manhattanDistance(position, val), val) for val in foodPosition])
+        foodPositions = newFoodGrid.asList()
+        distance, newPostion = min([(util.manhattanDistance(position, val), val) for val in foodPositions])
+        # print('new position: {} {}'.format(*newPostion))
         totalDist += distance  # update total distance
         position = newPostion  # update position
         newFoodGrid[position[0]][position[1]] = False  # update food grid
+    # print('DONE')
+    print('totalDist:', totalDist)
     return totalDist
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -543,7 +546,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -579,7 +582,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         x,y = state
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]  # return true if this position has food
 
 def mazeDistance(point1, point2, gameState):
     """
