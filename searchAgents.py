@@ -315,10 +315,7 @@ class CornersProblem(search.SearchProblem):
 
             if state[0] not in state[1]:
                 state[1].append(state)
-                self.visitedCorners.append(state)
 
-            #print('len(state[1])', len(state[1]))
-            #print('self', len(self.visitedCorners))
             if len(state[1]) == 4:
                 isGoal = True
 
@@ -400,12 +397,24 @@ def cornersHeuristic(state, problem):
 
     not_visited.extend([val for val in corners if val not in visited])
 
-    while(not_visited != []):
-        distance, corner = min([(util.manhattanDistance(temp ,val),val) for val in not_visited])
-        dist += distance
-        temp = corner
+    while True:
+        
+        if(not_visited == []):
+            break
 
-        not_visited.remove(corner)
+        list_of_dist_and_corner = []
+
+        for val in not_visited:
+            list_of_dist_and_corner.append([util.manhattanDistance(temp, val), val])
+       
+        get_min_of_list_of_dist_and_corner = min(list_of_dist_and_corner)
+        
+        min_dist = get_min_of_list_of_dist_and_corner[0]
+        min_corner = get_min_of_list_of_dist_and_corner[1]
+        dist += min_dist
+        temp = min_corner
+
+        not_visited.remove(min_corner)
     return dist
 
 class AStarCornersAgent(SearchAgent):

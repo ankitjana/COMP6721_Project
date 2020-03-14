@@ -100,7 +100,6 @@ def depthFirstSearch(problem):
         current, move = stack.pop()
 
         if problem.isGoalState(current):
-            #print('move', move)
             return move
 
         if current not in visited:
@@ -109,10 +108,6 @@ def depthFirstSearch(problem):
             for child in problem.getSuccessors(current):
                 child_state = child[0]
                 child_move = child[1]
-
-                # if problem.isGoalState(child_state):
-                #     return move + [child_move]
-                # else:
                 stack.push([child_state, move + [child_move]])
 
     util.raiseNotDefined()
