@@ -255,6 +255,7 @@ def manhattanHeuristic(position, problem, info={}):
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
+
 def euclideanHeuristic(position, problem, info={}):
     "The Euclidean distance heuristic for a PositionSearchProblem"
     xy1 = position
@@ -315,7 +316,10 @@ class CornersProblem(search.SearchProblem):
 
             if state[0] not in state[1]:
                 state[1].append(state)
+                self.visitedCorners.append(state)
 
+            #print('len(state[1])', len(state[1]))
+            #print('self', len(self.visitedCorners))
             if len(state[1]) == 4:
                 isGoal = True
 
@@ -397,24 +401,12 @@ def cornersHeuristic(state, problem):
 
     not_visited.extend([val for val in corners if val not in visited])
 
-    while True:
-        
-        if(not_visited == []):
-            break
+    while(not_visited != []):
+        distance, corner = min([(util.manhattanDistance(temp ,val),val) for val in not_visited])
+        dist += distance
+        temp = corner
 
-        list_of_dist_and_corner = []
-
-        for val in not_visited:
-            list_of_dist_and_corner.append([util.manhattanDistance(temp, val), val])
-       
-        get_min_of_list_of_dist_and_corner = min(list_of_dist_and_corner)
-        
-        min_dist = get_min_of_list_of_dist_and_corner[0]
-        min_corner = get_min_of_list_of_dist_and_corner[1]
-        dist += min_dist
-        temp = min_corner
-
-        not_visited.remove(min_corner)
+        not_visited.remove(corner)
     return dist
 
 class AStarCornersAgent(SearchAgent):
@@ -512,19 +504,76 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     foods = foodGrid.asList()
 
+    heuristic = 0
 
-    dist = []
-    # Get all food's maze distance from current position
-    for food in foods:
-        distance = mazeDistance(position, food, problem.startingGameState)
-        dist.append(distance)
-
-   
-    if len(dist) != 0:
-        # Used 'max' inadmissible or inconsistent heuristics may find optimal 
-        return max(dist)
-    else:
+    if len(foods) == 0:
         return 0
+
+    closestFood = closestPoint(position, foods)
+    farthestFood = farthestPoint(position, foods)
+    heuristic = manhattanDistance(closestFood, position)
+    heuristic = heuristic + manhattanDistance(farthestFood, closestFood)
+
+    gameState = problem.getStartState()
+    d1 = mazeDistance(closestFood, position, gameState)
+    d2 = mazeDistance(farthestFood, closestFood, gameState)
+    d3 = mazeDistance(farthestFood, position, gameState)
+
+    leftPoints = 0
+    for (x, y) in foods:
+        flag = 0
+        if x != farthestFood[0] and x != closestFood[0]:
+            leftPoints = leftPoints + 1
+            flag = 1
+
+        if flag == 0:
+            if y != farthestFood[1] and y != closestFood[1]:
+                leftPoints = leftPoints + 1
+
+    leftPoints2 = 0
+    for (x, y) in foods:
+        flag = 0
+        if x != position[0] and x != closestFood[0]:
+            leftPoints2 = leftPoints2 + 1
+            flag = 1
+
+        if flag == 0:
+            if y != position[1] and y != closestFood[1]:
+                leftPoints2 = leftPoints2 + 1
+    return d1 + leftPoints2
+
+
+def manhattanDistance (pointA, pointB):
+    return abs(pointA[0] - pointB[0]) + abs(pointA[1] - pointB[1])
+
+
+def closestPoint(fromPoint, candidatesList):
+    if len(candidatesList) == 0:
+        return None
+
+    closestPoint = candidatesList[0]
+    closestCost = manhattanDistance(fromPoint, closestPoint)
+    for candidate in candidatesList[1:]:
+        thisCost = manhattanDistance(fromPoint, candidate)
+        if thisCost < closestCost:
+            closestCost = thisCost
+            closestPoint = candidate
+
+    return closestPoint
+
+def farthestPoint(fromPoint, candidatesList):
+    if len(candidatesList) == 0:
+        return None
+
+    farthestPoint = candidatesList[0]
+    farthestCost = manhattanDistance(fromPoint, farthestPoint)
+    for candidate in candidatesList[1:]:
+        thisCost = manhattanDistance(fromPoint, candidate)
+        if thisCost > farthestCost:
+            farthestCost = thisCost
+            farthestPoint = candidate
+
+    return farthestPoint
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -546,7 +595,7 @@ class ClosestDotSearchAgent(SearchAgent):
     def findPathToClosestDot(self, gameState):
         """
         Returns a path (a list of actions) to the closest dot, starting from
-        gameState.
+            gameState.
         """
         # Here are some useful elements of the startState
         startPosition = gameState.getPacmanPosition()
