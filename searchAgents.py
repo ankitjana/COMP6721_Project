@@ -299,9 +299,9 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        return (self.startingPosition, [])
+        return (self.startingPosition, [])  # (starting coordinates, list of corners' coordinates)
 
-    def isGoalState(self, state):
+    def isGoalState(self, state): # state = ((x,y), [(x,y),(x1,y2)])
         """
         Returns whether this search state is a goal state of the problem.
         """
